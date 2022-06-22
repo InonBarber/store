@@ -1,26 +1,44 @@
-import { Injectable } from '@nestjs/common';
-import { CreateCreditCardDto } from './dto/create-credit-card.dto';
-import { UpdateCreditCardDto } from './dto/update-credit-card.dto';
+import {Injectable} from '@nestjs/common';
+import {CreateCreditCardDto} from './dto/create-credit-card.dto';
+import {UpdateCreditCardDto} from './dto/update-credit-card.dto';
+import {InjectModel} from "@nestjs/sequelize";
+import {CreditCard} from "./credit-card.model";
+import {UpdateOrderDto} from "../order/dto/update-order.dto";
 
 @Injectable()
 export class CreditCardService {
-  create(createCreditCardDto: CreateCreditCardDto) {
-    return 'This action adds a new creditCard';
-  }
+    constructor(@InjectModel((CreditCard)) private creditCard: typeof CreditCard) {
+    }
 
-  findAll() {
-    return `This action returns all creditCard`;
-  }
+    create(createCreditCardDto: CreateCreditCardDto) {
+        return this.creditCard.create({ ...createCreditCardDto });
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} creditCard`;
-  }
+    findAll(): Promise<CreditCard[]> {
+        return this.creditCard.findAll();
+    }
 
-  update(id: number, updateCreditCardDto: UpdateCreditCardDto) {
-    return `This action updates a #${id} creditCard`;
-  }
+    findOne(id: number): Promise<CreditCard> {
+        return this.creditCard.findOne({
+            where: {
+                id,
+            },
+        });
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} creditCard`;
-  }
+    update(id: number, updateCreditCardDto: UpdateCreditCardDto) {
+        this.creditCard.upsert({})
+        return this.creditCard.update(
+            {...UpdateCreditCardDto},
+            {
+                where:
+                    {userID: updateCreditCardDto.userID}
+            },
+        );
+    }
+
+    async remove(id: number) {
+        const creditCard = await this.findOne(id);
+        await creditCard.destroy();
+    }
 }

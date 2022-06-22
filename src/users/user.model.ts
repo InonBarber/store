@@ -5,10 +5,10 @@ import {
   HasMany,
   BeforeCreate,
 } from 'sequelize-typescript';
-import { CreditCard } from '../credit-card/entities/credit-card.entity';
-import { Address } from '../address/entities/address.entity';
-import { Order } from '../order/entities/order.entity';
-
+import * as bcrypt from 'bcrypt';
+import { Order } from '../order/order.model';
+import { CreditCard } from '../credit-card/credit-card.model';
+import { Address } from '../address/address.model';
 @Table
 export class User extends Model {
   @Column
@@ -33,6 +33,9 @@ export class User extends Model {
   @HasMany(() => Order)
   orders: Order[];
 
-  // @BeforeCreate
-  // static hashPassword(user: User) {}
+  @BeforeCreate
+  static hashPassword(instance: User) {
+    const hash = bcrypt.hashSync(instance.password, bcrypt.genSaltSync(10));
+    instance.password = hash;
+  }
 }

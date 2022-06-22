@@ -7,9 +7,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
     new ValidationPipe({
-      disableErrorMessages: true,
-      whitelist: true,
+      disableErrorMessages: false,
       transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
     }),
   );
   const config = new DocumentBuilder()
@@ -20,7 +22,8 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
-
+  app.setGlobalPrefix('/store');
+  app.enableCors();
   await app.listen(3000);
 }
 bootstrap();

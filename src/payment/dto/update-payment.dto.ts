@@ -3,7 +3,7 @@ import { CreatePaymentDto } from './create-payment.dto';
 
 export class UpdatePaymentDto extends PartialType(CreatePaymentDto) {
   orderNumber: string;
-  userNumber: string;
+  userID: number;
   creditCardID: number;
   orderID: number;
 }

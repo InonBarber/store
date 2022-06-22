@@ -7,6 +7,7 @@ import { Product } from './product.model';
 @Injectable()
 export class ProductService {
   constructor(@InjectModel(Product) private product: typeof Product) {}
+
   async create(createProductDto: CreateProductDto) {
     return this.product.create({ ...createProductDto });
   }
@@ -23,9 +24,14 @@ export class ProductService {
     });
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  update(id: number, updateProductDto : UpdateProductDto) {
+    this.product.upsert({})
+    return this.product.update(
+        { ...UpdateProductDto },
+        { where: { serialNumber: updateProductDto.serialNumber } },
+    );
   }
+
   async remove(id: number): Promise<void> {
     const product = await this.findOne(id);
     await product.destroy();

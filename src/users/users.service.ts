@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './user.model';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateProductDto } from '../product/dto/update-product.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
@@ -16,20 +15,20 @@ export class UsersService {
     return this.userModel.create({ ...createUserDto });
   }
 
-  update(id: number, updateProductDto: UpdateUserDto) {
-    return `This action updates a #${id} product`;
+  update(id: number, updateUserDto: UpdateUserDto) {
+    this.userModel.upsert({});
+    return this.userModel.update(
+      { ...updateUserDto },
+      { where: { emailAddress: updateUserDto.emailAddress } },
+    );
   }
 
   async findAll(): Promise<User[]> {
     return this.userModel.findAll();
   }
 
-  findOne(id: string): Promise<User> {
-    return this.userModel.findOne({
-      where: {
-        id,
-      },
-    });
+  findOne(options: any = {}): Promise<User> {
+    return this.userModel.findOne(options);
   }
 
   async remove(id: string): Promise<void> {

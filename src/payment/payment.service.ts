@@ -1,26 +1,41 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
+import {InjectModel} from "@nestjs/sequelize";
+import {Payment} from "./payment.model";
 
 @Injectable()
 export class PaymentService {
-  create(createPaymentDto: CreatePaymentDto) {
-    return 'This action adds a new payment';
+
+  constructor(@InjectModel(Payment) private payment: typeof Payment) {}
+
+  async create(createPaymentDto: CreatePaymentDto) {
+    return this.payment.create({...createPaymentDto });
   }
 
-  findAll() {
-    return `This action returns all payment`;
+  findAll(): Promise<Payment[]> {
+    return this.payment.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} payment`;
+  findOne(id: number): Promise<Payment>  {
+    return this.payment.findOne({
+      where: {
+        id,
+      },
+    });
   }
+
 
   update(id: number, updatePaymentDto: UpdatePaymentDto) {
-    return `This action updates a #${id} payment`;
+    this.payment.upsert({})
+    return this.payment.update(
+        { ...UpdatePaymentDto },
+        { where: { creditCardID: updatePaymentDto.creditCardID } },
+    );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} payment`;
+  async remove(id: number): Promise<void> {
+    const payment = await this.findOne(id);
+    await payment.destroy();
   }
 }
