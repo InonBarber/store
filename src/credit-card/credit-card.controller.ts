@@ -1,8 +1,17 @@
-import {Controller, Get, Post, Body, Patch, Param, Delete, UseGuards} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { CreditCardService } from './credit-card.service';
 import { CreateCreditCardDto } from './dto/create-credit-card.dto';
 import { UpdateCreditCardDto } from './dto/update-credit-card.dto';
-import {JwtAuthGuard} from "../auth/jwt-auth.guard";
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller('credit-card')
@@ -25,7 +34,10 @@ export class CreditCardController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCreditCardDto: UpdateCreditCardDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateCreditCardDto: UpdateCreditCardDto,
+  ) {
     return this.creditCardService.update(+id, updateCreditCardDto);
   }
 

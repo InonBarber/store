@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectModel } from '@nestjs/sequelize';
@@ -11,7 +16,6 @@ export class ProductService {
   async create(createProductDto: CreateProductDto) {
     return this.product.create({ ...createProductDto });
   }
-
   findAll(): Promise<Product[]> {
     return this.product.findAll();
   }
@@ -24,11 +28,11 @@ export class ProductService {
     });
   }
 
-  update(id: number, updateProductDto : UpdateProductDto) {
-    this.product.upsert({})
+  update(id: number, updateProductDto: UpdateProductDto) {
+    this.product.upsert({});
     return this.product.update(
-        { ...UpdateProductDto },
-        { where: { serialNumber: updateProductDto.serialNumber } },
+      { ...UpdateProductDto },
+      { where: { serialNumber: updateProductDto.serialNumber } },
     );
   }
 
