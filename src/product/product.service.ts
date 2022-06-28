@@ -8,14 +8,19 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Product } from './product.model';
+import { ProductImage } from './product-image.model';
 
 @Injectable()
 export class ProductService {
-  constructor(@InjectModel(Product) private product: typeof Product) {}
+  constructor(
+    @InjectModel(Product) private product: typeof Product,
+    @InjectModel(ProductImage) private ProductImages: typeof ProductImage,
+  ) {}
 
   async create(createProductDto: CreateProductDto) {
     return this.product.create({ ...createProductDto });
   }
+
   findAll(): Promise<Product[]> {
     return this.product.findAll();
   }
@@ -39,5 +44,9 @@ export class ProductService {
   async remove(id: number): Promise<void> {
     const product = await this.findOne(id);
     await product.destroy();
+  }
+
+  async saveImage(file) {
+    console.log(file);
   }
 }

@@ -1,12 +1,14 @@
-import { IsAlpha, IsNumber, IsString } from 'class-validator';
+import {IsNumber, IsString} from 'class-validator';
 
 export class CreateProductDto {
-  @IsString()
-  name: string;
+    @IsString()
+    name: string;
 
-  @IsString()
-  serialNumber: string;
+    @IsString()
+    serialNumber: string;
 
-  @IsNumber()
-  price: number;
+    @IsNumber()
+    price: number;
+
+    images: number[];
 }

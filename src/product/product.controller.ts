@@ -17,7 +17,8 @@ import { Observable, of } from 'rxjs';
 import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
-import path from 'path';
+import * as path from 'path';
+
 // @UseGuards()
 @Controller('product')
 export class ProductController {
@@ -48,26 +49,26 @@ export class ProductController {
     return this.productService.remove(+id);
   }
 
-  // @Post('upload')
-  // @UseInterceptors(
-  //   FileInterceptor('file', {
-  //     storage: diskStorage({
-  //       destination: '/uploads/productimages',
-  //       filename: (req, file, cb) => {
-  //         const filename: string =
-  //           path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
-  //         const extension: string = path.parse(file.originalname).ext;
-  //
-  //         cb(null, `${filename}${extension}`);
-  //       },
-  //     }),
-  //   }),
-  // )
-  // uploadFile(@UploadedFile() file): Observable<object> {
-  //   console.log(file);
-  //   return of({ imagePath: file.filename });
-  // }
-  //
+  @Post('upload-image')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: '/uploads/product-images',
+        filename: (req, file, cb) => {
+          const filename: string = uuidv4();
+          const extension: string = path.parse(file.originalname).ext;
+
+          cb(null, `${filename}${extension}`);
+        },
+      }),
+    }),
+  )
+  uploadFile(@UploadedFile() file, @Body() data: any) {
+    console.log(data);
+    this.productService.saveImage(file);
+    return true;
+  }
+
   // @Post('upload')
   // @UseInterceptors(AnyFilesInterceptor())
   //

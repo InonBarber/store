@@ -17,6 +17,8 @@ import { ProductModule } from './product/product.module';
 import { AuthModule } from './auth/auth.module';
 import { AccordionModule } from 'primeng/accordion';
 import { MenuItem } from 'primeng/api';
+import { ProductImage } from './product/product-image.model';
+
 @Module({
   imports: [
     SequelizeModule.forRoot({
@@ -37,11 +39,12 @@ import { MenuItem } from 'primeng/api';
         Product,
         Payment,
         OrderProduct,
+        ProductImage,
       ],
       autoLoadModels: true,
       synchronize: true,
       // sync: {
-      //     force: true,
+      //   alter: true,
       // },
     }),
     UsersModule,
