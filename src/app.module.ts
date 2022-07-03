@@ -18,7 +18,8 @@ import { AuthModule } from './auth/auth.module';
 import { AccordionModule } from 'primeng/accordion';
 import { MenuItem } from 'primeng/api';
 import { ProductImage } from './product/product-image.model';
-
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 @Module({
   imports: [
     SequelizeModule.forRoot({
@@ -54,6 +55,9 @@ import { ProductImage } from './product/product-image.model';
     AddressModule,
     ProductModule,
     AuthModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
