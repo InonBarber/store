@@ -17,6 +17,9 @@ import { ProductModule } from './product/product.module';
 import { AuthModule } from './auth/auth.module';
 import { AccordionModule } from 'primeng/accordion';
 import { MenuItem } from 'primeng/api';
+import { ProductImage } from './product/product-image.model';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 @Module({
   imports: [
     SequelizeModule.forRoot({
@@ -37,11 +40,12 @@ import { MenuItem } from 'primeng/api';
         Product,
         Payment,
         OrderProduct,
+        ProductImage,
       ],
       autoLoadModels: true,
       synchronize: true,
       // sync: {
-      //     force: true,
+      //   alter: true,
       // },
     }),
     UsersModule,
@@ -51,6 +55,9 @@ import { MenuItem } from 'primeng/api';
     AddressModule,
     ProductModule,
     AuthModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

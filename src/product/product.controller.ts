@@ -13,11 +13,23 @@ import {
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Observable, of } from 'rxjs';
 import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
-import path from 'path';
+import * as path from 'path';
+
+export const storage = {
+  storage: diskStorage({
+    destination: __dirname + '../../../public/media/images',
+    filename: (req, file, cb) => {
+      const filename: string = uuidv4();
+      const extension: string = path.parse(file.originalname).ext;
+
+      cb(null, `${filename}${extension}`);
+    },
+  }),
+};
+
 // @UseGuards()
 @Controller('product')
 export class ProductController {
@@ -35,7 +47,14 @@ export class ProductController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.productService.findOne(+id);
+    return this.productService.findOne(
+      { id: +id },
+      {
+        attributes: ['url', 'id', 'imageIndex'],
+        where: { size: 'original' },
+        required: false,
+      },
+    );
   }
 
   @Patch(':id')
@@ -48,31 +67,9 @@ export class ProductController {
     return this.productService.remove(+id);
   }
 
-  // @Post('upload')
-  // @UseInterceptors(
-  //   FileInterceptor('file', {
-  //     storage: diskStorage({
-  //       destination: '/uploads/productimages',
-  //       filename: (req, file, cb) => {
-  //         const filename: string =
-  //           path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
-  //         const extension: string = path.parse(file.originalname).ext;
-  //
-  //         cb(null, `${filename}${extension}`);
-  //       },
-  //     }),
-  //   }),
-  // )
-  // uploadFile(@UploadedFile() file): Observable<object> {
-  //   console.log(file);
-  //   return of({ imagePath: file.filename });
-  // }
-  //
-  // @Post('upload')
-  // @UseInterceptors(AnyFilesInterceptor())
-  //
-  // uploadFile(@UploadedFiles() files: Observable<object>) {
-  //   console.log(files);
-  //   return of({ imagePath: files });
-  // }
+  @Post('upload-image')
+  @UseInterceptors(FileInterceptor('file', storage))
+  async uploadFile(@UploadedFile() file, @Body() data: any) {
+    return this.productService.saveImage([file], data.productID);
+  }
 }

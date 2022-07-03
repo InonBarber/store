@@ -8,6 +8,7 @@ import {
   IsAlpha,
 } from 'sequelize-typescript';
 import { Order, OrderProduct } from '../order/order.model';
+import { ProductImage } from './product-image.model';
 
 @Table
 export class Product extends Model {
@@ -22,4 +23,10 @@ export class Product extends Model {
 
   @BelongsToMany(() => Order, () => OrderProduct)
   orders: Order[];
+
+  @HasMany(() => ProductImage)
+  images: ProductImage[];
+
+  @Column
+  primaryImage: number;
 }
