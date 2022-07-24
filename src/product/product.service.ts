@@ -12,6 +12,8 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Product } from './product.model';
 import { ProductImage } from './product-image.model';
 import * as path from 'path';
+import * as XLSX from 'xlsx';
+import { readFile } from 'xlsx';
 
 @Injectable()
 export class ProductService {
@@ -25,7 +27,7 @@ export class ProductService {
   }
 
   findAll(): Promise<Product[]> {
-    return this.product.findAll({include:[ProductImage]});
+    return this.product.findAll({ include: [ProductImage] });
   }
 
   findOne(options = {}, imageOptions = {}): Promise<Product> {
@@ -74,4 +76,24 @@ export class ProductService {
       return this.ProductImages.findOne({ where: { id: imageSave.id } });
     }
   }
+
+  async saveExFile(exFile) {
+    const fileName = exFile;
+    const workbook = XLSX.readFile(
+      __dirname +
+        '/../../public/media/excel/00bf1bef-746a-47ad-b295-6be59b8a93e8.xlsx',
+      {
+        type: 'binary',
+      },
+    );
+    let sheetName = workbook.SheetNames[0];
+    let sheet = workbook.Sheets[sheetName];
+    let jsonSheet = XLSX.utils.sheet_to_json(sheet, {
+      defval: null,
+      blankrows: true,
+    });
+    return jsonSheet;
+  }
 }
+
+// joe npm

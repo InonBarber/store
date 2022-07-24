@@ -3,6 +3,8 @@ import { InjectModel } from '@nestjs/sequelize';
 import { User } from './user.model';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Product } from '../product/product.model';
+import { ProductImage } from '../product/product-image.model';
 
 @Injectable()
 export class UsersService {
@@ -30,6 +32,19 @@ export class UsersService {
   findOne(options: any = {}): Promise<User> {
     return this.userModel.findOne(options);
   }
+  // findOne(options: any = {}): Promise<User> {
+  //   return this.userModel.findOne({
+  //     where: { id: options },
+  //   });
+  // }
+
+  // findOne(options = {}): Promise<User> {
+  //   return this.userModel.findOne({
+  //     where: {
+  //       ...options,
+  //     },
+  //   });
+  // }
 
   async remove(id: string): Promise<void> {
     const user = await this.findOne(id);

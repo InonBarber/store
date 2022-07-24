@@ -5,4 +5,8 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {
   name: string;
   serialNumber: string;
   price: number;
+  description: string;
+  unitType: string;
+  vat: boolean;
+  total: number;
 }
