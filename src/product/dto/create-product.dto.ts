@@ -1,4 +1,4 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsString } from 'class-validator';
 
 export class CreateProductDto {
   @IsString()
@@ -11,4 +11,16 @@ export class CreateProductDto {
   price: number;
 
   images: number[];
+
+  @IsString()
+  description: string;
+
+  @IsString()
+  unitType: string;
+
+  @IsBoolean()
+  vat: boolean;
+
+  @IsNumber()
+  total: number;
 }

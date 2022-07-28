@@ -17,17 +17,21 @@ import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
+import { Express } from 'express';
 
-export const storage = {
-  storage: diskStorage({
-    destination: __dirname + '../../../public/media/images',
-    filename: (req, file, cb) => {
-      const filename: string = uuidv4();
-      const extension: string = path.parse(file.originalname).ext;
+export const storage = (dir = '../../../public/media/images') => {
+  console.log(__dirname + dir);
+  return {
+    storage: diskStorage({
+      destination: __dirname + dir,
+      filename: (req, file, cb) => {
+        const filename: string = uuidv4();
+        const extension: string = path.parse(file.originalname).ext;
 
-      cb(null, `${filename}${extension}`);
-    },
-  }),
+        cb(null, `${filename}${extension}`);
+      },
+    }),
+  };
 };
 
 // @UseGuards()
@@ -68,8 +72,17 @@ export class ProductController {
   }
 
   @Post('upload-image')
-  @UseInterceptors(FileInterceptor('file', storage))
+  @UseInterceptors(FileInterceptor('file', storage()))
   async uploadFile(@UploadedFile() file, @Body() data: any) {
     return this.productService.saveImage([file], data.productID);
+  }
+
+  @Post('upload-excel')
+  @UseInterceptors(
+    FileInterceptor('file', storage('/../../public/media/excel')),
+  )
+  uploadExFile(@UploadedFile() file: Express.Multer.File) {
+    console.log(file);
+    return this.productService.saveExFile(file);
   }
 }

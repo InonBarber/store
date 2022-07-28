@@ -3,6 +3,8 @@ import {
   Column,
   ForeignKey,
   Model,
+  NotEmpty,
+  NotNull,
   Table,
 } from 'sequelize-typescript';
 import { Product } from './product.model';

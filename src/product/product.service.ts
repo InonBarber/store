@@ -12,6 +12,10 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Product } from './product.model';
 import { ProductImage } from './product-image.model';
 import * as path from 'path';
+import * as XLSX from 'xlsx';
+import { readFile } from 'xlsx';
+import { InjectRepository } from '@nestjs/typeorm';
+import { unique } from 'sequelize-typescript/dist/shared/array';
 
 @Injectable()
 export class ProductService {
@@ -25,7 +29,7 @@ export class ProductService {
   }
 
   findAll(): Promise<Product[]> {
-    return this.product.findAll({include:[ProductImage]});
+    return this.product.findAll({ include: [ProductImage] });
   }
 
   findOne(options = {}, imageOptions = {}): Promise<Product> {
@@ -74,4 +78,46 @@ export class ProductService {
       return this.ProductImages.findOne({ where: { id: imageSave.id } });
     }
   }
+
+  async saveExFile(exFile) {
+    const fileName = exFile;
+    const workbook = XLSX.readFile(
+      __dirname +
+        '/../../public/media/excel/00bf1bef-746a-47ad-b295-6be59b8a93e8.xlsx',
+      {
+        type: 'binary',
+      },
+    );
+    let sheetName = workbook.SheetNames[0];
+    let sheet = workbook.Sheets[sheetName];
+    let jsonSheet = XLSX.utils.sheet_to_json(sheet, {
+      defval: null,
+      blankrows: true,
+    });
+    let parsed = this.parseXlFile(jsonSheet);
+    for (let pr of parsed) {
+      await this.product.upsert(pr);
+    }
+    // console.log(jsonSheet);
+    // return jsonSheet;
+  }
+
+  parseXlFile(json: any[]) {
+    return json.map((product) => {
+      let keys = Object.keys(product).map((k) => k.toLowerCase());
+      product.total = product.vat ? product.price * 1.17 : product.price;
+      for (let key in product) {
+        let k = key.toLowerCase().split(' ').join('').split('_').join('');
+        if (k == 'unittype') {
+          product.unitType = product[key];
+          delete product[key];
+        }
+      }
+      let p = { ...product, serialNumber: product.serialNumber };
+      delete p.serialNumber;
+      return p;
+    });
+  }
 }
+
+// joe npm
