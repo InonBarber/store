@@ -18,7 +18,6 @@ import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
 import { Express } from 'express';
-import { readFile, readFileSync } from 'fs';
 
 export const storage = (dir = '../../../public/media/images') => {
   console.log(__dirname + dir);

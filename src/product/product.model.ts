@@ -6,6 +6,7 @@ import {
   BelongsTo,
   BelongsToMany,
   IsAlpha,
+  Unique,
 } from 'sequelize-typescript';
 import { Order, OrderProduct } from '../order/order.model';
 import { ProductImage } from './product-image.model';
@@ -16,6 +17,7 @@ export class Product extends Model {
   @Column
   name: string;
 
+  @Unique
   @Column
   serialNumber: string;
 

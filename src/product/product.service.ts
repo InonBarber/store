@@ -14,6 +14,8 @@ import { ProductImage } from './product-image.model';
 import * as path from 'path';
 import * as XLSX from 'xlsx';
 import { readFile } from 'xlsx';
+import { InjectRepository } from '@nestjs/typeorm';
+import { unique } from 'sequelize-typescript/dist/shared/array';
 
 @Injectable()
 export class ProductService {
@@ -92,7 +94,29 @@ export class ProductService {
       defval: null,
       blankrows: true,
     });
-    return jsonSheet;
+    let parsed = this.parseXlFile(jsonSheet);
+    for (let pr of parsed) {
+      await this.product.upsert(pr);
+    }
+    // console.log(jsonSheet);
+    // return jsonSheet;
+  }
+
+  parseXlFile(json: any[]) {
+    return json.map((product) => {
+      let keys = Object.keys(product).map((k) => k.toLowerCase());
+      product.total = product.vat ? product.price * 1.17 : product.price;
+      for (let key in product) {
+        let k = key.toLowerCase().split(' ').join('').split('_').join('');
+        if (k == 'unittype') {
+          product.unitType = product[key];
+          delete product[key];
+        }
+      }
+      let p = { ...product, serialNumber: product.serialNumber };
+      delete p.serialNumber;
+      return p;
+    });
   }
 }
 
